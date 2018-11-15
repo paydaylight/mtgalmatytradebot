@@ -13,7 +13,6 @@ import parser
 # In[2]:
 
 
-TOKEN = '737356832:AAEoCl3if1mp_sHijO_Ij_dCyaveZcBcInQ'
 bot = telebot.TeleBot(TOKEN)
 
 

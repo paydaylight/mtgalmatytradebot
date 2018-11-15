@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+certifi = "==0.0.8"
+chardet = "==1.0.1"
+gunicorn = "==0.14.2"
+requests = "==0.11.1"
+Flask = "==0.8"
+"Jinja2" = "==2.6"
+Werkzeug = "==0.8.3"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"

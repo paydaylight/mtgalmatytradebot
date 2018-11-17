@@ -7,13 +7,12 @@
 
 
 import telebot
-import parser
 
 
 # In[2]:
 
 
-TOKEN = '737356832:AAEoCl3if1mp_sHijO_Ij_dCyaveZcBcInQ'
+
 bot = telebot.TeleBot(TOKEN)
 
 
@@ -29,7 +28,7 @@ bot.polling(none_stop=True)
 # In[4]:
 
 
-@bot.message_handler(content_type=['text'])
+@bot.message_handler(content_types=['text'])
 def wts_handler(message):
     global isRunning
     if not isRunning:

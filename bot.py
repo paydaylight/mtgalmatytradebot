@@ -7,12 +7,12 @@
 
 
 import telebot
-
+import os
 
 # In[2]:
 
 
-
+TOKEN = "737356832:AAEoCl3if1mp_sHijO_Ij_dCyaveZcBcInQ"
 bot = telebot.TeleBot(TOKEN)
 
 
@@ -22,7 +22,6 @@ bot = telebot.TeleBot(TOKEN)
 @bot.message_handler(commands=['help'])
 def start_handler(message):
     bot.send_message(message.chat.id, 'To be updated', reply_markup=m.source_markup)
-bot.polling(none_stop=True)
 
 
 # In[4]:
@@ -42,5 +41,6 @@ def wtsResponse(message):
     text = message.text.lower()
     msg = bot.send_message(chat_id, 'Soon I will be able to find it!')
     isRunning = False
+
 bot.polling(none_stop=True)
 

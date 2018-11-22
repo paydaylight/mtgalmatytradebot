@@ -12,7 +12,7 @@ import os
 # In[2]:
 
 
-TOKEN = os.environ[TELEGRAM_TOKEN]
+TOKEN = "737356832:AAEoCl3if1mp_sHijO_Ij_dCyaveZcBcInQ"
 bot = telebot.TeleBot(TOKEN)
 
 

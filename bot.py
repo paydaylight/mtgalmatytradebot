@@ -22,6 +22,3 @@ bot = telebot.TeleBot(TOKEN)
 @bot.message_handler(commands=['help'])
 def start_handler(message):
     bot.send_message(message.chat.id, 'To be updated')
-
-
-bot.polling()

@@ -14,9 +14,10 @@ from telegram.ext import Updater
 
 
 TOKEN = os.environ['TELEGRAM_TOKEN']
+PORT = int(os.environ.get('PORT', '8443'))
 bot = telebot.TeleBot(TOKEN)
-
-
+bot.set_webhook("https://mtgalmatytradebot.herokuapp.com/" + TOKEN)
+updater = Updater(TOKEN)
 # In[24]:
 
 
@@ -27,8 +28,7 @@ commands = {'/help' : 'List of available commands',
 
 
 # In[25]:
-PORT = int(os.environ.get('PORT', '8443'))
-updater = Updater(TOKEN)
+
 
 @bot.message_handler(commands=['help'])
 def help_handler(message):
@@ -100,6 +100,7 @@ def get_commands():
 
 
 # In[13]:
+
 
 
 

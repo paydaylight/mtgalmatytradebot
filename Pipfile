@@ -1,18 +1,13 @@
 [[source]]
+name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pypi"
-
-[packages]
-certifi = "==0.0.8"
-chardet = "==1.0.1"
-requests = "==0.11.1"
-Flask = "==0.10.1"
-"Jinja2" = "==2.6"
-Werkzeug = "==0.8.3"
-pytelegrambotapi = "*"
 
 [dev-packages]
+
+[packages]
+pytelegrambotapi = "*"
+beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.6"

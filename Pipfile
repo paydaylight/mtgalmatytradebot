@@ -6,8 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-pytelegrambotapi = "*"
-beautifulsoup4 = "*"
+pytelegrambotapi = "11.1.0"
+beautifulsoup4 = "4.7.1"
 
 [requires]
 python_version = "3.6"

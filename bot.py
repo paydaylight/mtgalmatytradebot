@@ -6,7 +6,7 @@
 # In[23]:
 
 
-import telebot, os, time, markups, functions
+import telebot, os, markups, functions
 from telegram.ext import Updater
 
 
@@ -99,18 +99,14 @@ def get_commands():
 
 
 # In[13]:
-while True:
-    try:
-        bot.polling(none_stop=True)
-    except Exception as e:
-        time.sleep(15)
-"""
+
+
 PORT = int(os.environ.get('PORT', '8443'))
 updater = Updater(TOKEN)
 updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
 updater.bot.set_webhook("https://mtgalmatytradebot.herokuapp.com/" + TOKEN)
 updater.idle()
-"""
+
 
 # In[15]:
 

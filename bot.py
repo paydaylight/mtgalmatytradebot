@@ -27,7 +27,8 @@ commands = {'/help' : 'List of available commands',
 
 
 # In[25]:
-
+PORT = int(os.environ.get('PORT', '8443'))
+updater = Updater(TOKEN)
 
 @bot.message_handler(commands=['help'])
 def help_handler(message):
@@ -101,8 +102,7 @@ def get_commands():
 # In[13]:
 
 
-PORT = int(os.environ.get('PORT', '8443'))
-updater = Updater(TOKEN)
+
 updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
 updater.bot.set_webhook("https://mtgalmatytradebot.herokuapp.com/" + TOKEN)
 updater.idle()

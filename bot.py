@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import os, functions
@@ -23,11 +23,13 @@ commands = {'/help' : 'List of available commands',
 
 def start(bot, update):
     update.message.reply_text('Hello! I am trade bot, I will help you with trading MTG cards in Almaty!\n'
-                              'Simply type /setname and your deckbox.org username (do not forget about whitespace)'
+                              'Simply type /setname and your deckbox.org username(do not forget about whitespace) '
                               'to start searching for cards!\n'
                               'Run /help command to check list of available commands.\n\n'
-                              'Then type /wts + name of the card you want to sell/trade to search for any matches.'
-                              'The same is true for /wtb + name of the card you want to buy/trade!')
+                              'Type /wts + name of the card you want to sell/trade to search for any matches.\n'
+                              'The same is true for /wtb + name of the card you want to buy/trade!\n\n'
+                              'Example: "/wts Adorned Pouncer" command will return any matching person who have Adorned Pouncer '
+                              'in their deckbox.org wishlist. ')
 
 
 # In[5]:
@@ -69,6 +71,7 @@ def wts(bot, update, args):
 
 
 def help_command(bot, update):
+    create_table()
     update.message.reply_text(get_commands())
 
 
@@ -86,8 +89,7 @@ def get_commands():
 
 
 def main():
-    TOKEN = os.environ['TELEGRAM_TOKEN']
-    PORT = int(os.environ.get('PORT', '8443'))
+    TOKEN = '737356832:AAEoCl3if1mp_sHijO_Ij_dCyaveZcBcInQ'
     updater = Updater(TOKEN)
     dp = updater.dispatcher
     
@@ -97,9 +99,7 @@ def main():
     dp.add_handler(CommandHandler('wtb', wtb, pass_args=True))
     dp.add_handler(CommandHandler('help', help_command))
     
-
-    updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
-    updater.bot.set_webhook("https://mtgalmatytradebot.herokuapp.com/" + TOKEN)
+    updater.start_polling()
     updater.idle()
 
 

@@ -4,7 +4,7 @@
 # In[1]:
 
 
-import sqlite3
+import psycopg2
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 
@@ -14,15 +14,16 @@ from urllib.request import urlopen
 
 def db_entry(chat_id, username, tradelist_link, wishlist_link):
     try:
-        conn = sqlite3.connect('mtgtradebot.db')
+        conn = psychopg2.connect(DB.get_url(), sslmode='require')
         c = conn.cursor() 
         entry = (chat_id, username, tradelist_link, wishlist_link, chat_id, chat_id, username, tradelist_link, wishlist_link)
-        c.execute('IF EXISTS(SELECT * FROM usernames WHERE chat_id=?)'+ 
-                      'UPDATE usernames SET username=?, tradelist_link=?, wishlist_link=? WHERE chat_id=?'
+        c.execute('IF EXISTS(SELECT * FROM usernames WHERE chat_id=%s)'+ 
+                      'UPDATE usernames SET username=%s, tradelist_link=%s, wishlist_link=%s WHERE chat_id=%s'
                   'ELSE'+
-                      'INSERT INTO usernames VALUES (?, ?, ?, ?)', entry)
+                      'INSERT INTO usernames VALUES (%s, %s, %s, %s)', entry)
         conn.commit()
     finally:
+        c.close()
         conn.close()
 
 
@@ -45,13 +46,14 @@ def cardset_fetcher(username):
 
 def db_fetcher(index, searched_card):
     try:
-        conn = sqlite3.connect('mtgtradebot.db')
+        conn = psychopg2.connect(DB.get_url(), sslmode='require')
         c = conn.cursor()
         return_string = ''
         for row in c.execute('SELECT * FROM usernames'):
             return_string += search_cardset(row[1], row[index], searched_card)
         return return_string
     finally:
+        c.close()
         conn.close()
 
 
@@ -65,4 +67,35 @@ def search_cardset(username, cardlist, searched_card):
     if searched_card in soup.body.get_text().lower():
         return(username+'\n')
     return ''
+
+
+# In[ ]:
+
+
+def DB():
+    url = ''
+    def get_url():
+        if DB.url == '':
+            DB()
+        return DB.url
+    def __init__(self):
+        if DB.url != '':
+            pass
+        else:
+            DB.url = os.environ['DATABASE_URL']
+
+
+# In[ ]:
+
+
+def create_table():
+    try:
+        conn = psychopg2.connect(DB.get_url(), sslmode='require')
+        c = conn.cursor() 
+        entry = (chat_id, username, tradelist_link, wishlist_link, chat_id, chat_id, username, tradelist_link, wishlist_link)
+        c.execute('CREATE TABLE usernames (chat_id integer PRIMARY KEY, username varchar, tradelist_link varchar, wishlist_link varchar)')
+        conn.commit()
+    finally:
+        c.close()
+        conn.close()
 

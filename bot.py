@@ -1,94 +1,78 @@
 
 # coding: utf-8
 
-# Trade bot for MTG Almaty community
-
-# In[23]:
+# In[2]:
 
 
-import telebot, os, markups, functions
-from telegram.ext import Updater
+import os, functions
+from telegram.ext import (Updater, CommandHandler)
 
 
-# In[17]:
-
-
-TOKEN = os.environ['TELEGRAM_TOKEN']
-bot = telebot.TeleBot(TOKEN)
-
-
-# In[24]:
+# In[3]:
 
 
 commands = {'/help' : 'List of available commands', 
             '/wts' : 'Want To Sell/trade card', 
             '/wtb' : 'Want To Buy/trade card', 
-            '/start' : 'Initiate new user or update old information'}
+            '/start' : 'Command to initiate conversation with bot',
+            '/setname' : 'Set your deckbox.org username'}
 
 
-# In[25]:
+# In[4]:
 
 
-@bot.message_handler(commands=['help'])
-def help_handler(message):
-    bot.send_message(message.chat.id, get_commands())
+def start(bot, update):
+    update.message.reply_text('Hello! I am trade bot, I will help you with trading MTG cards in Almaty!\n'
+                              'Simply type /setname and your deckbox.org username (do not forget about whitespace)'
+                              'to start searching for cards!\n'
+                              'Run /help command to check list of available commands.\n\n'
+                              'Then type /wts + name of the card you want to sell/trade to search for any matches.'
+                              'The same is true for /wtb + name of the card you want to buy/trade!')
 
 
-# In[26]:
+# In[5]:
 
 
-@bot.message_handler(commands=['wtb'])
-def wtb_handler(message):
-    chat_id = message.chat.id
-    msg = bot.send_message(chat_id, 'Enter card name to search')
-    bot.register_next_step_handler(msg, wtb_response)
-def wtb_response(message):
-    chat_id = message.chat.id
-    text = message.text.lower()
-    lst = db_fetcher(2, text) 
-    if all(x is '' for x in lst):
-        msg = bot.send_message(chat_id, "Nothing found")
-    else:
-        msg = bot.send_message(chat_id, "That's what I found:\n"+lst)
-
-
-# In[27]:
-
-
-@bot.message_handler(commands=['wts'])
-def wts_handler(message):
-    chat_id = message.chat.id
-    msg = bot.send_message(chat_id, 'Enter card name to search')
-    bot.register_next_step_handler(msg, wts_response)
-def wts_response(message):
-    chat_id = message.chat.id
-    text = message.text.lower()
-    lst = db_fetcher(3, text) 
-    if all(x is '' for x in lst):
-        msg = bot.send_message(chat_id, "Nothing found")
-    else:
-        msg = bot.send_message(chat_id, "That's what I found:\n"+lst)
-
-
-# In[28]:
-
-
-@bot.message_handler(commands=['start'])
-def start_handler(message):
-    msg = bot.send_message(message.chat.id, 'To work with this bot please provide your valid deckbox.org username')
-    bot.register_next_step_handler(msg, username_handler)
-def username_handler(message):
-    username = message.text
+def setname(bot, update, args):
+    username = args[0]
     tradelist_link, wishlist_link = cardset_fetcher(username)
     if tradelist_link != wishlist_link:
-        db_entry(message.chat.id, username, tradelist_link, wishlist_link)
-        bot.send_message(message.chat.id, 'Successfully added', reply_markup=markup)
+        db_entry(update.message.chat_id, username, tradelist_link, wishlist_link)
+        update.message.reply_text('Successfully added')
     else:
-        msg = bot.send_message(message.chat.id, 'Seems like such user does not exist, please check spelling and try again', reply_markup=markup)
-        bot.register_next_step_handler(msg, username_handler)
+        update.message.reply_text('Seems like such user does not exist, please check spelling and try again')
 
 
-# In[29]:
+# In[6]:
+
+
+def wtb(bot, update, args):
+    lst = db_fetcher(2, " ".join(args)) 
+    if all(x is '' for x in lst):
+        update.message.reply_text("Nothing found")
+    else:
+        update.message.reply_text("That's what I found:\n"+lst)
+
+
+# In[7]:
+
+
+def wts(bot, update, args):
+    lst = db_fetcher(3, " ".join(args)) 
+    if all(x is '' for x in lst):
+        update.message.reply_text("Nothing found")
+    else:
+        update.message.reply_text("That's what I found:\n"+lst)
+
+
+# In[8]:
+
+
+def help_command(bot, update):
+    update.message.reply_text(get_commands())
+
+
+# In[9]:
 
 
 def get_commands():
@@ -98,18 +82,27 @@ def get_commands():
     return string
 
 
-# In[13]:
+# In[10]:
 
 
-PORT = int(os.environ.get('PORT', '8443'))
-updater = Updater(TOKEN)
-updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
-updater.bot.set_webhook("https://mtgalmatytradebot.herokuapp.com/" + TOKEN)
-updater.idle()
+def main():
+    TOKEN = '737356832:AAEoCl3if1mp_sHijO_Ij_dCyaveZcBcInQ'
+    updater = Updater(TOKEN)
+    dp = updater.dispatcher
+    
+    dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('setname', setname, pass_args=True))
+    dp.add_handler(CommandHandler('wts', wts, pass_args=True))
+    dp.add_handler(CommandHandler('wtb', wtb, pass_args=True))
+    dp.add_handler(CommandHandler('help', help_command))
+    
+    updater.start_polling()
+    updater.idle()
 
 
-# In[15]:
+# In[11]:
 
 
-
+if __name__ == '__main__':
+    main()
 

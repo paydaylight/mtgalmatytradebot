@@ -86,7 +86,7 @@ def get_commands():
 
 
 def main():
-    TOKEN = '737356832:AAEoCl3if1mp_sHijO_Ij_dCyaveZcBcInQ'
+    TOKEN = os.environ['TELEGRAM_TOKEN']
     PORT = int(os.environ.get('PORT', '8443'))
     updater = Updater(TOKEN)
     dp = updater.dispatcher

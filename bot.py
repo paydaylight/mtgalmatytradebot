@@ -89,6 +89,7 @@ def get_commands():
 
 def main():
     TOKEN = os.environ['TELEGRAM_TOKEN']
+    PORT = int(os.environ.get('PORT', '8443'))
     updater = Updater(TOKEN)
     dp = updater.dispatcher
     
@@ -98,7 +99,8 @@ def main():
     dp.add_handler(CommandHandler('wtb', wtb, pass_args=True))
     dp.add_handler(CommandHandler('help', help_command))
     
-    updater.start_polling()
+    updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
+    updater.bot.set_webhook("https://mtgalmatytradebot.herokuapp.com/" + TOKEN)
     updater.idle()
 
 

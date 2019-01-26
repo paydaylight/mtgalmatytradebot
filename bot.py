@@ -71,7 +71,6 @@ def wts(bot, update, args):
 
 
 def help_command(bot, update):
-    create_table()
     update.message.reply_text(get_commands())
 
 

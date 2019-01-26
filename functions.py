@@ -84,18 +84,3 @@ def DB():
         else:
             DB.url = os.environ['DATABASE_URL']
 
-
-# In[ ]:
-
-
-def create_table():
-    try:
-        conn = psychopg2.connect(DB.get_url(), sslmode='require')
-        c = conn.cursor() 
-        entry = (chat_id, username, tradelist_link, wishlist_link, chat_id, chat_id, username, tradelist_link, wishlist_link)
-        c.execute('CREATE TABLE usernames (chat_id integer PRIMARY KEY, username varchar, tradelist_link varchar, wishlist_link varchar)')
-        conn.commit()
-    finally:
-        c.close()
-        conn.close()
-

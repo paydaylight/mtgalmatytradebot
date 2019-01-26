@@ -14,7 +14,7 @@ from urllib.request import urlopen
 
 def db_entry(chat_id, username, tradelist_link, wishlist_link):
     try:
-        conn = psychopg2.connect(DB.get_url(), sslmode='require')
+        conn = psycopg2.connect(DB.get_url(), sslmode='require')
         c = conn.cursor() 
         entry = (chat_id, username, tradelist_link, wishlist_link, chat_id, chat_id, username, tradelist_link, wishlist_link)
         c.execute('IF EXISTS(SELECT * FROM usernames WHERE chat_id=%s)'+ 
@@ -46,7 +46,7 @@ def cardset_fetcher(username):
 
 def db_fetcher(index, searched_card):
     try:
-        conn = psychopg2.connect(DB.get_url(), sslmode='require')
+        conn = psycopg2.connect(DB.get_url(), sslmode='require')
         c = conn.cursor()
         return_string = ''
         for row in c.execute('SELECT * FROM usernames'):

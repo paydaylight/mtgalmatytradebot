@@ -14,13 +14,10 @@ from urllib.request import urlopen
 
 def db_entry(chat_id, username, tradelist_link, wishlist_link):
     try:
-        conn = psycopg2.connect(DB.get_url(), sslmode='require')
+        conn = psycopg2.connect(get_db_url(), sslmode='require')
         c = conn.cursor() 
-        entry = (chat_id, username, tradelist_link, wishlist_link, chat_id, chat_id, username, tradelist_link, wishlist_link)
-        c.execute('IF EXISTS(SELECT * FROM usernames WHERE chat_id=%s)'+ 
-                      'UPDATE usernames SET username=%s, tradelist_link=%s, wishlist_link=%s WHERE chat_id=%s'
-                  'ELSE'+
-                      'INSERT INTO usernames VALUES (%s, %s, %s, %s)', entry)
+        entry = (chat_id, username, tradelist_link, wishlist_link, username, tradelist_link, wishlist_link)
+        c.execute('INSERT INTO usernames VALUES (%s, %s, %s, %s) ON CONFLICT (chat_id) DO UPDATE SET username=%s, tradelist_link=%s, wishlist_link=%s;', entry)
         conn.commit()
     finally:
         c.close()
@@ -33,12 +30,12 @@ def db_entry(chat_id, username, tradelist_link, wishlist_link):
 def cardset_fetcher(username):
     target_page = 'https://deckbox.org/users/'+username
     page = urlopen(target_page)
-    if page != urlopen('https://deckbox.org/users'):
-        soup = BeautifulSoup(page, 'lxml')
-        cardlist = soup.find_all('li', attrs={'class':'submenu_entry'})
-        return 'https://deckbox.org'+cardlist[1].a['href'], 'https://deckbox.org'+cardlist[2].a['href']
-    else: 
-        return 'https://deckbox.org', 'https://deckbox.org'
+    soup = BeautifulSoup(page, 'lxml')
+    cardlist = soup.find_all('li', attrs={'class':'submenu_entry'})
+    tradelist = 'https://deckbox.org'+cardlist[1].a['href']
+    wishlist = 'https://deckbox.org'+cardlist[2].a['href']
+    
+    return tradelist, wishlist 
 
 
 # In[4]:
@@ -46,10 +43,11 @@ def cardset_fetcher(username):
 
 def db_fetcher(index, searched_card):
     try:
-        conn = psycopg2.connect(DB.get_url(), sslmode='require')
+        conn = psycopg2.connect(get_db_url(), sslmode='require')
         c = conn.cursor()
         return_string = ''
-        for row in c.execute('SELECT * FROM usernames'):
+        c.execute('SELECT * FROM usernames;')
+        for row in c:
             return_string += search_cardset(row[1], row[index], searched_card)
         return return_string
     finally:
@@ -69,18 +67,9 @@ def search_cardset(username, cardlist, searched_card):
     return ''
 
 
-# In[ ]:
+# In[6]:
 
 
-def DB():
-    url = ''
-    def get_url():
-        if DB.url == '':
-            DB()
-        return DB.url
-    def __init__(self):
-        if DB.url != '':
-            pass
-        else:
-            DB.url = os.environ['DATABASE_URL']
+def get_db_url():
+    return os.environ['DATABASE_URL']
 

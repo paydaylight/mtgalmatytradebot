@@ -8,6 +8,15 @@ import os, functions
 from telegram.ext import (Updater, CommandHandler)
 
 
+# In[2]:
+
+
+import logging
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 # In[3]:
 
 
@@ -36,10 +45,10 @@ def start(bot, update):
 
 
 def setname(bot, update, args):
-    username = args[0]
-    tradelist_link, wishlist_link = cardset_fetcher(username)
-    if tradelist_link != wishlist_link:
-        db_entry(update.message.chat_id, username, tradelist_link, wishlist_link)
+    username = "".join(args)
+    tradelist_link, wishlist_link = functions.cardset_fetcher(username)
+    if 'users' not in tradelist_link+wishlist_link:
+        functions.db_entry(update.message.chat_id, username, tradelist_link, wishlist_link)
         update.message.reply_text('Successfully added')
     else:
         update.message.reply_text('Seems like such user does not exist, please check spelling and try again')
@@ -49,22 +58,28 @@ def setname(bot, update, args):
 
 
 def wtb(bot, update, args):
-    lst = db_fetcher(2, " ".join(args)) 
-    if all(x is '' for x in lst):
-        update.message.reply_text("Nothing found")
+    if ''.join(args) != '':
+        lst = functions.db_fetcher(2, " ".join(args).lower()) 
+        if all(x is '' for x in lst):
+            update.message.reply_text("Nothing found")
+        else:
+            update.message.reply_text("That's what I found:\n"+lst)
     else:
-        update.message.reply_text("That's what I found:\n"+lst)
+        update.message.reply_text("Are you really searching for something? Provide real card name then!")
 
 
 # In[7]:
 
 
 def wts(bot, update, args):
-    lst = db_fetcher(3, " ".join(args)) 
-    if all(x is '' for x in lst):
-        update.message.reply_text("Nothing found")
+    if ''.join(args) != '':
+        lst = functions.db_fetcher(3, " ".join(args).lower()) 
+        if all(x is '' for x in lst):
+            update.message.reply_text("Nothing found")
+        else:
+            update.message.reply_text("That's what I found:\n"+lst)
     else:
-        update.message.reply_text("That's what I found:\n"+lst)
+        update.message.reply_text("Are you really searching for something? Provide real card name then!")
 
 
 # In[8]:
@@ -87,6 +102,14 @@ def get_commands():
 # In[10]:
 
 
+def error(bot, update, error):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, error)
+
+
+# In[11]:
+
+
 def main():
     TOKEN = os.environ['TELEGRAM_TOKEN']
     PORT = int(os.environ.get('PORT', '8443'))
@@ -98,13 +121,14 @@ def main():
     dp.add_handler(CommandHandler('wts', wts, pass_args=True))
     dp.add_handler(CommandHandler('wtb', wtb, pass_args=True))
     dp.add_handler(CommandHandler('help', help_command))
+    dp.add_error_handler(error)
     
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
     updater.bot.set_webhook("https://mtgalmatytradebot.herokuapp.com/" + TOKEN)
     updater.idle()
 
 
-# In[11]:
+# In[12]:
 
 
 if __name__ == '__main__':
